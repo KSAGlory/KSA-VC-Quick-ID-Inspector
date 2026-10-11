@@ -1,0 +1,313 @@
+// KSA VC Quick ID Inspector
+// Author: KSAGlory
+// Community: discord.gg/ksahub
+// Version 0.1.0 testing build for Vice City 1.0 and VC.CLEO 2.2.0.
+
+{$CLEO .cs}
+{$NOSOURCE}
+
+script_name "KSA_VCI"
+
+int enabled = true
+int playerChar
+int target = -1
+int modelId
+int health
+int vehicle
+int vehicleModel
+int vehicleHealth
+int toggleNotice = 0
+int pointer
+int vehicleKey
+int vehicleName
+float playerX
+float playerY
+float playerZ
+int nextScan = 0
+
+vehicleKey = get_label_pointer @VehicleKeyBuffer
+vehicleName = get_label_pointer @VehicleNameBuffer
+TimerA = 0
+TimerB = 0
+
+while true
+    wait 0
+
+    if
+        not is_player_playing 0
+    then
+        TimerA = 0
+        target = -1
+        continue
+    end
+
+    playerChar = get_player_char 0
+
+    if
+        test_cheat "KSAID"
+    then
+        if
+            enabled == true
+        then
+            enabled = false
+            toggleNotice = 2
+        else
+            enabled = true
+            toggleNotice = 1
+        end
+        TimerB = 0
+        target = -1
+    end
+
+    use_text_commands true
+
+    if and
+        toggleNotice <> 0
+        TimerB < 1800
+    then
+        gosub @DrawNotice
+    else
+        toggleNotice = 0
+    end
+
+    if
+        enabled == false
+    then
+        continue
+    end
+
+    if
+        TimerA < 4000
+    then
+        gosub @DrawIntro
+        continue
+    end
+
+    if
+        is_char_sitting_in_any_car playerChar
+    then
+        target = -1
+        vehicle = store_car_char_is_in_no_save playerChar
+        vehicleModel = get_car_model vehicle
+        vehicleHealth = get_car_health vehicle
+        // VC's vehicle-name opcode indexes the original vehicle model table.
+        if and
+            vehicleModel >= 130
+            vehicleModel <= 236
+        then
+            vehicleKey = get_name_of_vehicle_model vehicleModel
+            vehicleName = get_text_label_string vehicleKey
+        end
+        gosub @DrawVehicle
+        continue
+    end
+
+    if
+        not is_button_pressed 0 Button.RightShoulder1
+    then
+        target = -1
+        nextScan = 0
+        continue
+    end
+
+    pointer = get_game_timer
+    if
+        pointer >= nextScan
+    then
+        nextScan = pointer
+        nextScan += 100
+        target = -1
+        playerX, playerY, playerZ = get_char_coordinates playerChar
+        // Restart CLEO's ped enumeration, then check VC's actual aim target.
+        if
+            target = get_random_char_in_sphere_no_save_recursive playerX playerY playerZ 100.0 false true
+        then
+            while true
+                if
+                    is_player_targetting_char 0 target
+                then
+                    break
+                end
+                if
+                    not target = get_random_char_in_sphere_no_save_recursive playerX playerY playerZ 100.0 true true
+                then
+                    target = -1
+                    break
+                end
+            end
+        end
+    end
+
+    if
+        target >= 0
+    then
+        if
+            does_char_exist target
+        then
+            if
+                is_player_targetting_char 0 target
+            then
+                pointer = get_ped_pointer target
+                if
+                    pointer <> 0
+                then
+                    // plugin-sdk VC CEntity: short m_nModelIndex at offset 0x5C.
+                    pointer += 0x5C
+                    modelId = read_memory pointer 2 false
+                    health = get_char_health target
+                    gosub @DrawPed
+                end
+            end
+        else
+            target = -1
+        end
+    end
+end
+
+:HeaderStyle
+set_text_font Font.Standard
+set_text_proportional true
+set_text_centre false
+set_text_justify false
+set_text_right_justify false
+set_text_wrapx 620.0
+set_text_background false
+set_text_scale 0.36 0.80
+return
+
+:BodyStyle
+set_text_font Font.Standard
+set_text_proportional true
+set_text_centre false
+set_text_justify false
+set_text_right_justify false
+set_text_wrapx 620.0
+set_text_background false
+set_text_scale 0.30 0.70
+return
+
+:DrawIntro
+gosub @HeaderStyle
+set_text_colour 16 20 30 230
+display_text_string 25.0 19.0 "KSA VC QUICK ID INSPECTOR"
+gosub @HeaderStyle
+set_text_colour 166 227 233 255
+display_text_string 24.0 18.0 "KSA VC QUICK ID INSPECTOR"
+gosub @BodyStyle
+set_text_colour 16 20 30 230
+display_text_string 25.0 41.0 "TYPE KSAID TO TOGGLE"
+gosub @BodyStyle
+set_text_colour 203 195 227 255
+display_text_string 24.0 40.0 "TYPE KSAID TO TOGGLE"
+return
+
+:DrawPed
+gosub @HeaderStyle
+set_text_colour 16 20 30 230
+display_text_string 25.0 19.0 "KSA PED INSPECTOR"
+gosub @HeaderStyle
+set_text_colour 166 227 233 255
+display_text_string 24.0 18.0 "KSA PED INSPECTOR"
+gosub @BodyStyle
+set_text_colour 16 20 30 230
+display_text_formatted 25.0 41.0 "MODEL ID  %d" modelId
+gosub @BodyStyle
+set_text_colour 203 195 227 255
+display_text_formatted 24.0 40.0 "MODEL ID  %d" modelId
+gosub @BodyStyle
+set_text_colour 16 20 30 230
+display_text_formatted 25.0 61.0 "HEALTH  %d" health
+gosub @BodyStyle
+set_text_colour 183 228 199 255
+display_text_formatted 24.0 60.0 "HEALTH  %d" health
+return
+
+:DrawVehicle
+gosub @HeaderStyle
+set_text_colour 16 20 30 230
+display_text_string 25.0 19.0 "KSA VEHICLE INSPECTOR"
+gosub @HeaderStyle
+set_text_colour 166 227 233 255
+display_text_string 24.0 18.0 "KSA VEHICLE INSPECTOR"
+gosub @BodyStyle
+set_text_colour 16 20 30 230
+if and
+    vehicleModel >= 130
+    vehicleModel <= 236
+then
+    display_text_string 25.0 41.0 vehicleName
+else
+    display_text_string 25.0 41.0 "CUSTOM VEHICLE"
+end
+gosub @BodyStyle
+set_text_colour 203 195 227 255
+if and
+    vehicleModel >= 130
+    vehicleModel <= 236
+then
+    display_text_string 24.0 40.0 vehicleName
+else
+    display_text_string 24.0 40.0 "CUSTOM VEHICLE"
+end
+gosub @BodyStyle
+set_text_colour 16 20 30 230
+display_text_formatted 25.0 61.0 "MODEL ID  %d" vehicleModel
+gosub @BodyStyle
+set_text_colour 255 218 185 255
+display_text_formatted 24.0 60.0 "MODEL ID  %d" vehicleModel
+gosub @BodyStyle
+set_text_colour 16 20 30 230
+display_text_formatted 25.0 81.0 "HEALTH  %d" vehicleHealth
+gosub @BodyStyle
+set_text_colour 183 228 199 255
+display_text_formatted 24.0 80.0 "HEALTH  %d" vehicleHealth
+return
+
+:DrawNotice
+gosub @HeaderStyle
+set_text_centre true
+set_text_colour 16 20 30 230
+display_text_string 321.0 13.0 "KSA VC QUICK ID INSPECTOR"
+gosub @HeaderStyle
+set_text_centre true
+set_text_colour 166 227 233 255
+display_text_string 320.0 12.0 "KSA VC QUICK ID INSPECTOR"
+gosub @BodyStyle
+set_text_centre true
+set_text_colour 16 20 30 230
+if
+    toggleNotice == 1
+then
+    display_text_string 321.0 35.0 "ENABLED"
+else
+    display_text_string 321.0 35.0 "DISABLED"
+end
+gosub @BodyStyle
+set_text_centre true
+if
+    toggleNotice == 1
+then
+    set_text_colour 183 228 199 255
+    display_text_string 320.0 34.0 "ENABLED"
+else
+    set_text_colour 244 181 184 255
+    display_text_string 320.0 34.0 "DISABLED"
+end
+return
+
+:VehicleKeyBuffer
+hex
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+end
+
+:VehicleNameBuffer
+hex
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+end
