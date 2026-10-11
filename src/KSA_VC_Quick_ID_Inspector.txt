@@ -1,7 +1,7 @@
 // KSA VC Quick ID Inspector
 // Author: KSAGlory
 // Community: discord.gg/ksahub
-// Version 0.1.1 testing build for Vice City 1.0 and VC.CLEO 2.2.0.
+// Version 1.0.0 for Vice City 1.0 and VC.CLEO 2.2.0.
 
 {$CLEO .cs}
 {$NOSOURCE}
@@ -103,9 +103,12 @@ while true
         continue
     end
 
-    if
-        not is_button_pressed 0 Button.RightShoulder1
+    if or
+        is_button_pressed 0 Button.RightShoulder1
+        is_key_pressed 2
     then
+        // Continue with either the mapped aim action or mouse aim.
+    else
         target = -1
         nextScan = 0
         continue
@@ -118,16 +121,23 @@ while true
         nextScan = pointer
         nextScan += 100
         target = -1
+        gosub @FindCrosshairPed
         playerX, playerY, playerZ = get_char_coordinates playerChar
-        // Restart CLEO's ped enumeration, then check VC's actual aim target.
+        // Resolve the ray-hit pointer through the live ped pool before reading it.
         if
             target = get_random_char_in_sphere_no_save_recursive playerX playerY playerZ 100.0 false true
         then
             while true
-                if
+                pointer = get_ped_pointer target
+                if or
                     is_player_targetting_char 0 target
+                    pointer == vehicle
                 then
-                    break
+                    if
+                        target <> playerChar
+                    then
+                        break
+                    end
                 end
                 if
                     not target = get_random_char_in_sphere_no_save_recursive playerX playerY playerZ 100.0 true true
@@ -145,25 +155,52 @@ while true
         if
             does_char_exist target
         then
+            pointer = get_ped_pointer target
             if
-                is_player_targetting_char 0 target
+                pointer <> 0
             then
-                pointer = get_ped_pointer target
-                if
-                    pointer <> 0
-                then
-                    // plugin-sdk VC CEntity: short m_nModelIndex at offset 0x5C.
-                    pointer += 0x5C
-                    modelId = read_memory pointer 2 false
-                    health = get_char_health target
-                    gosub @DrawPed
-                end
+                // plugin-sdk VC CEntity: short m_nModelIndex at offset 0x5C.
+                pointer += 0x5C
+                modelId = read_memory pointer 2 false
+                health = get_char_health target
+                gosub @DrawPed
             end
         else
             target = -1
         end
     end
 end
+
+:FindCrosshairPed
+// Reuse the vehicle text buffers while on foot: source, end, collision, entity.
+// VC 1.0 plugin-sdk: TheCamera 0x7E4688, active cam +0x76,
+// CCam array +0x188, stride 0x1CC, source vector +0x174.
+vehicle = 0
+pointer = read_memory 0x7E46FE 1 false
+if
+    pointer > 2
+then
+    return
+end
+pointer *= 0x1CC
+pointer += 0x7E4984
+playerX = read_memory pointer 4 false
+pointer += 4
+playerY = read_memory pointer 4 false
+pointer += 4
+playerZ = read_memory pointer 4 false
+// Classic Axis patches this method to respect its widescreen crosshair position.
+call_method 0x46F890 0x7E4688 6 0 vehicleName vehicleKey playerZ playerY playerX 100.0
+vehicleHealth = vehicleName
+vehicleHealth += 16
+vehicleModel = vehicleName
+vehicleModel += 64
+write_memory vehicleModel 4 0 false
+// CWorld::ProcessLineOfSight, cdecl, twelve arguments in reverse stack order.
+// Include walls and vehicles so pedestrians behind obstacles are not selected.
+health = call_function_return 0x4D92D0 12 12 false false false false true true true true vehicleModel vehicleHealth vehicleName vehicleKey
+vehicle = read_memory vehicleModel 4 false
+return
 
 :HeaderStyle
 set_text_font Font.Standard

@@ -1,6 +1,8 @@
 # Manual gameplay checks
 
-Build: 0.1.1. All checks below are pending. Build 0.1.0 failed at startup with opcode error 0649; the script name encoding has been corrected for this retest.
+Release: 1.0.0, promoted from the working 0.1.2 build without gameplay changes. KSAGlory confirmed save loading, startup instructions, enable/disable notices, vehicle information, and pedestrian information with Classic Axis mouse aiming. The earlier startup and pedestrian issues were resolved before release.
+
+Controller lock-on, mouse aiming without Classic Axis, exact value comparisons, obstacle edge cases, and extended gameplay remain unverified. The checklist below is available for further testing; it is not a record that every case has passed.
 
 Use Vice City 1.0 with VC.CLEO 2.2.0. Keep one copy of the inspector in the game's CLEO folder.
 

@@ -1,10 +1,14 @@
 # KSA VC Quick ID Inspector
 
-A CLEO model inspector project for Grand Theft Auto: Vice City, based on [KSA Quick ID Inspector](https://github.com/KSAGlory/KSA-Quick-ID-Inspector) for San Andreas.
+A lightweight CLEO model inspector for Grand Theft Auto: Vice City, based on [KSA Quick ID Inspector](https://github.com/KSAGlory/KSA-Quick-ID-Inspector) for San Andreas.
 
-The inspector is designed for players, mod testers, and creators who need to identify pedestrian and vehicle models directly in the game. Version 0.1.1 is a testing build; gameplay verification is pending.
+Identify pedestrian and vehicle models without leaving the game. Version **1.0.0** is the first public release.
 
-## Implemented features
+## Download
+
+[Download the latest release](https://github.com/KSAGlory/KSA-VC-Quick-ID-Inspector/releases/latest). Choose the `KSA_VC_Quick_ID_Inspector_v1_0_0.zip` asset, not GitHub's source-code archive.
+
+## Features
 
 - Show a targeted pedestrian's model ID and health
 - Display the current vehicle's name, model ID, and health
@@ -16,29 +20,35 @@ The inspector is designed for players, mod testers, and creators who need to ide
 - Grand Theft Auto: Vice City 1.0 for Windows
 - [VC.CLEO 2.2.0](https://github.com/cleolibrary/III.VC.CLEO)
 
+For the original PC game only, not San Andreas or the Definitive Edition. Classic Axis is optional; mouse aiming was tested with it installed.
+
+## Installation
+
+1. Close Vice City and extract the release ZIP.
+2. Copy `CLEO/KSA_VC_Quick_ID_Inspector.cs` into your game's `CLEO` folder.
+3. Launch the game and load a save.
+
+The inspector starts enabled. Install only one copy. To uninstall, close the game and remove only `KSA_VC_Quick_ID_Inspector.cs` from the `CLEO` folder. No save files need to be changed.
+
 ## Using the inspector
 
 - Type `KSAID` during gameplay to enable or disable the display.
 - Target a pedestrian with a weapon to inspect their model ID and health.
 - Enter a vehicle to display its name, model ID, and health.
 
-Pedestrian inspection follows the game's targeting state. Replacement vehicles keep their original model IDs and names. Vehicles outside the original model range use the label `CUSTOM VEHICLE`.
+Pedestrian inspection supports native lock-on targeting and a crosshair ray for mouse aiming, including Classic Axis. Replacement vehicles keep their original model IDs and names. Vehicles outside the original model range use the label `CUSTOM VEHICLE`.
 
-## Building and installation
+## Building from source
 
 The editable source is in `src/KSA_VC_Quick_ID_Inspector.txt`.
 
 Open it in Sanny Builder 4.2 or newer, select **GTA VC (SBL)**, and compile. Alternatively, run `build.ps1` with the path to your Sanny Builder executable. Copy the resulting `KSA_VC_Quick_ID_Inspector.cs` into the modded game's `CLEO` folder, then restart the game.
 
-Install only one copy of the script. To disable it, close the game and move its `.cs` file outside the game folder.
-
 ## Verification status
 
-The source compiles in Sanny Builder's Vice City SBL mode. The compiled file was also decompiled in the same mode to check the generated commands and local variables.
+Gameplay tests by KSAGlory confirmed save loading, startup instructions, `KSAID` enable/disable, vehicle information, and pedestrian information with Classic Axis mouse aiming on Windows 11, Vice City 1.0, and VC.CLEO 2.2.0. The release script is byte-for-byte identical to that tested build.
 
-The first gameplay test of 0.1.0 stopped at startup with `Incorrect opcode ID: 0649`. Version 0.1.1 corrects the script name's native string encoding. The build checks that header explicitly; an in-game retest is still required.
-
-In-game rendering, targeting, toggle behavior, save loading, and compatibility with the existing mods still need the [manual checks](docs/manual-testing.md). There is no packaged release yet.
+Controller lock-on, mouse aiming without Classic Axis, exact value comparisons, obstacle edge cases, and extended gameplay have not been verified. See the [manual checks](docs/manual-testing.md). This is not a guarantee of compatibility with every mod setup.
 
 ## Author and Community
 
