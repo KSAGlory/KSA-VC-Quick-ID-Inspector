@@ -2,7 +2,7 @@
 
 A CLEO model inspector project for Grand Theft Auto: Vice City, based on [KSA Quick ID Inspector](https://github.com/KSAGlory/KSA-Quick-ID-Inspector) for San Andreas.
 
-The inspector is designed for players, mod testers, and creators who need to identify pedestrian and vehicle models directly in the game. Version 0.1.0 is a testing build; gameplay verification is pending.
+The inspector is designed for players, mod testers, and creators who need to identify pedestrian and vehicle models directly in the game. Version 0.1.1 is a testing build; gameplay verification is pending.
 
 ## Implemented features
 
@@ -35,6 +35,8 @@ Install only one copy of the script. To disable it, close the game and move its 
 ## Verification status
 
 The source compiles in Sanny Builder's Vice City SBL mode. The compiled file was also decompiled in the same mode to check the generated commands and local variables.
+
+The first gameplay test of 0.1.0 stopped at startup with `Incorrect opcode ID: 0649`. Version 0.1.1 corrects the script name's native string encoding. The build checks that header explicitly; an in-game retest is still required.
 
 In-game rendering, targeting, toggle behavior, save loading, and compatibility with the existing mods still need the [manual checks](docs/manual-testing.md). There is no packaged release yet.
 

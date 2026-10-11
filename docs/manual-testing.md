@@ -1,6 +1,6 @@
 # Manual gameplay checks
 
-Build: 0.1.0. All checks below are pending.
+Build: 0.1.1. All checks below are pending. Build 0.1.0 failed at startup with opcode error 0649; the script name encoding has been corrected for this retest.
 
 Use Vice City 1.0 with VC.CLEO 2.2.0. Keep one copy of the inspector in the game's CLEO folder.
 

@@ -1,12 +1,13 @@
 // KSA VC Quick ID Inspector
 // Author: KSAGlory
 // Community: discord.gg/ksahub
-// Version 0.1.0 testing build for Vice City 1.0 and VC.CLEO 2.2.0.
+// Version 0.1.1 testing build for Vice City 1.0 and VC.CLEO 2.2.0.
 
 {$CLEO .cs}
 {$NOSOURCE}
 
-script_name "KSA_VCI"
+// Vice City reads this native command's name as a fixed eight-byte string.
+script_name 'KSA_VCI'
 
 int enabled = true
 int playerChar

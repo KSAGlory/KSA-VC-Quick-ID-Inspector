@@ -38,4 +38,11 @@ $result = Get-Item -LiteralPath $output
 if ($result.Length -lt 512 -or $result.LastWriteTime -lt $started) {
     throw 'The compiler did not produce a fresh, complete script.'
 }
+$bytes = [IO.File]::ReadAllBytes($output)
+$expectedHeader = [byte[]](0xA4, 0x03, 0x4B, 0x53, 0x41, 0x5F, 0x56, 0x43, 0x49, 0x00, 0x06, 0x00)
+for ($index = 0; $index -lt $expectedHeader.Length; $index++) {
+    if ($bytes[$index] -ne $expectedHeader[$index]) {
+        throw 'Invalid Vice City script-name encoding. Use a single-quoted fixed-width name.'
+    }
+}
 Write-Output "Compiled: $output ($($result.Length) bytes)"
