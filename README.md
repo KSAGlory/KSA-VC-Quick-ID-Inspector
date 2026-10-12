@@ -44,12 +44,6 @@ The editable source is in `src/KSA_VC_Quick_ID_Inspector.txt`.
 
 Open it in Sanny Builder 4.2 or newer, select **GTA VC (SBL)**, and compile. Alternatively, run `build.ps1` with the path to your Sanny Builder executable. Copy the resulting `KSA_VC_Quick_ID_Inspector.cs` into the modded game's `CLEO` folder, then restart the game.
 
-## Verification status
-
-Gameplay tests by KSAGlory confirmed save loading, startup instructions, `KSAID` enable/disable, vehicle information, and pedestrian information with Classic Axis mouse aiming on Windows 11, Vice City 1.0, and VC.CLEO 2.2.0. The release script is byte-for-byte identical to that tested build.
-
-Controller lock-on, mouse aiming without Classic Axis, exact value comparisons, obstacle edge cases, and extended gameplay have not been verified. See the [manual checks](docs/manual-testing.md). This is not a guarantee of compatibility with every mod setup.
-
 ## Author and Community
 
 - Author: **KSAGlory**
