@@ -44,11 +44,6 @@ The editable source is in `src/KSA_VC_Quick_ID_Inspector.txt`.
 
 Open it in Sanny Builder 4.2 or newer, select **GTA VC (SBL)**, and compile. Alternatively, run `build.ps1` with the path to your Sanny Builder executable. Copy the resulting `KSA_VC_Quick_ID_Inspector.cs` into the modded game's `CLEO` folder, then restart the game.
 
-## Author and Community
-
-- Author: **KSAGlory**
-- Community: [discord.gg/ksahub](https://discord.gg/ksahub)
-
 ## License
 
 This project is available under the [MIT License](LICENSE).
